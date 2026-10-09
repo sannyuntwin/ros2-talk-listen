@@ -46,5 +46,12 @@ install(PROGRAMS
     RENAME action_client
 )
 
+install(PROGRAMS
+    scripts/param_talker.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME param_talker
+)
+
+
 
 ament_package()
