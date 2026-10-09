@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>diff_drive_robot</name>
+  <version>0.1.0</version>
+  <description>Simple 2-wheel differential drive robot in Gazebo</description>
+  <maintainer email="sannyuntwin21@gmail.com">Sanny</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>ros_gz_bridge</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
