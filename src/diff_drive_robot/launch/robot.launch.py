@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import ExecuteProcess
 from launch.substitutions import Command, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -18,10 +18,8 @@ def generate_launch_description():
             output="screen",
         ),
         # Gazebo
-        Node(
-            package="ros_gz_sim",
-            executable="gz_sim",
-            arguments=["-r", "empty.sdf"],
+        ExecuteProcess(
+            cmd=["gz", "sim", "empty.sdf", "-r"],
             output="screen",
         ),
         # Spawn robot into Gazebo
