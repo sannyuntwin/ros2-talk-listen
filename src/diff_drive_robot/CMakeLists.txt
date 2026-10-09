@@ -15,4 +15,11 @@ install(PROGRAMS
   RENAME drive
 )
 
+install(PROGRAMS
+  scripts/teleop.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME teleop
+)
+
+
 ament_package()
