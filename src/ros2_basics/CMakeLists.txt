@@ -52,6 +52,12 @@ install(PROGRAMS
     RENAME param_talker
 )
 
+install(PROGRAMS
+    scripts/lifecycle_talker.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME lifecycle_talker
+)
+
 
 
 ament_package()
