@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.8)
+project(ros2_basic)
+
+find_package(ament_cmake REQUIRED)
+
+install(PROGRAMS
+    scripts/talker.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME talker
+)
+
+install(PROGRAMS
+    scripts/listener.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME listener
+)
+
+ament_package()
