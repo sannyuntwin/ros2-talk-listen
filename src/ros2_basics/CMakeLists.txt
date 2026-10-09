@@ -16,4 +16,17 @@ install(PROGRAMS
     RENAME listener
 )
 
+install(PROGRAMS
+    scripts/server.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME server
+)
+
+install(PROGRAMS
+    scripts/client.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME client
+)
+
+
 ament_package()
