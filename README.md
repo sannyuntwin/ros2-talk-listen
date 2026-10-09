@@ -1,6 +1,6 @@
-# ROS 2 Basics — Talker, Listener & Diff Drive Robot
+# ROS 2 Basics — Topics, Services, Actions & Diff Drive Robot
 
-A beginner ROS 2 project for learning core concepts step by step: topics, services, and a real diff-drive robot in Gazebo.
+A beginner ROS 2 project for learning core concepts step by step: topics, services, actions, and a real diff-drive robot in Gazebo.
 
 ## Stack
 
@@ -17,9 +17,9 @@ A beginner ROS 2 project for learning core concepts step by step: topics, servic
 | Step | Concept | What it does |
 |---|---|---|
 | 1 | **Topic** | Talker publishes, Listener subscribes (one-way stream) |
-| 2 | **Diff Drive Robot** | URDF robot in Gazebo, driven by `/cmd_vel` Twist messages |
-| 3 | **Service** | Client sends a request, Server returns a response |
-| 4 | **Action** | Client sends a goal, Server streams feedback, then returns result |
+| 2 | **Service** | Client sends a request, Server returns a response |
+| 3 | **Action** | Client sends a goal, Server streams feedback, then returns result |
+| 4 | **Diff Drive Robot** | URDF robot in Gazebo, driven by `/cmd_vel` Twist messages |
 
 ---
 
@@ -84,9 +84,70 @@ Expected output:
 
 ---
 
+## Step 2 — Service: AddTwoInts
+
+A client sends two numbers, a server returns the sum. One request → one response.
+
+```
+client  →  request (a=3, b=5)  →  server
+client  ←  response (sum=8)    ←  server
+```
+
+**Terminal A — start the server:**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run ros2_basics server
+```
+
+**Terminal B — call the client:**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run ros2_basics client 3 5
+```
+
+Expected output:
+```
+[add_two_ints_server] 3 + 5 = 8
+[add_two_ints_client] Result: 3 + 5 = 8
+```
+
 ---
 
-## Step 2 — Diff Drive Robot in Gazebo
+## Step 3 — Action: Countdown
+
+A client sends a goal (target number), the server streams feedback every second while counting down, then returns a final result.
+
+```
+client  →  goal (target=5)          →  server
+client  ←  feedback (remaining: 4)  ←  server  (each second)
+client  ←  result (message="done")  ←  server
+```
+
+**Terminal A — start the action server:**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run ros2_basics action_server
+```
+
+**Terminal B — send a goal:**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run ros2_basics action_client 5
+```
+
+Expected output:
+```
+[countdown_client] Feedback: 5 remaining
+[countdown_client] Feedback: 4 remaining
+[countdown_client] Feedback: 3 remaining
+[countdown_client] Feedback: 2 remaining
+[countdown_client] Feedback: 1 remaining
+[countdown_client] Result: done
+```
+
+---
+
+## Step 4 — Diff Drive Robot in Gazebo
 
 A two-wheeled robot loaded from URDF, spawned in Gazebo, driven by keyboard.
 
@@ -137,9 +198,15 @@ src/
 ├── ros2_basics/
 │   ├── package.xml
 │   ├── CMakeLists.txt
+│   ├── action/
+│   │   └── Countdown.action      # Custom action definition
 │   └── scripts/
-│       ├── talker.py       # Publishes String to /chatter every 1 second
-│       └── listener.py     # Subscribes to /chatter and prints messages
+│       ├── talker.py             # Publishes String to /chatter every 1 second
+│       ├── listener.py           # Subscribes to /chatter and prints messages
+│       ├── server.py             # AddTwoInts service server
+│       ├── client.py             # AddTwoInts service client
+│       ├── action_server.py      # Countdown action server
+│       └── action_client.py      # Countdown action client
 │
 └── diff_drive_robot/
     ├── package.xml
