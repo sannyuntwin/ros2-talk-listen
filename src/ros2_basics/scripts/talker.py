@@ -21,3 +21,6 @@ def main():
     rclpy.init()
     rclpy.spin(Talker())
     rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
