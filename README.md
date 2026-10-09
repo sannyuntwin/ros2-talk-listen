@@ -1,6 +1,6 @@
-# ROS 2 Basics — Topics, Services, Actions & Diff Drive Robot
+# ROS 2 Basics — Topics, Services, Actions, Parameters & Lifecycle Nodes
 
-A beginner ROS 2 project for learning core concepts step by step: topics, services, actions, and a real diff-drive robot in Gazebo.
+A beginner ROS 2 project for learning core concepts step by step: topics, services, actions, parameters, lifecycle nodes, and a real diff-drive robot in Gazebo.
 
 ## Stack
 
@@ -19,7 +19,9 @@ A beginner ROS 2 project for learning core concepts step by step: topics, servic
 | 1 | **Topic** | Talker publishes, Listener subscribes (one-way stream) |
 | 2 | **Service** | Client sends a request, Server returns a response |
 | 3 | **Action** | Client sends a goal, Server streams feedback, then returns result |
-| 4 | **Diff Drive Robot** | URDF robot in Gazebo, driven by `/cmd_vel` Twist messages |
+| 4 | **Parameters** | Node reads config values at startup or runtime |
+| 5 | **Lifecycle Node** | Managed states — configure, activate, deactivate |
+| 6 | **Diff Drive Robot** | URDF robot in Gazebo, driven by `/cmd_vel` Twist messages |
 
 ---
 
@@ -147,7 +149,58 @@ Expected output:
 
 ---
 
-## Step 4 — Diff Drive Robot in Gazebo
+## Step 4 — Parameters
+
+A node declares parameters with default values. You can override them at launch or change them at runtime.
+
+**Terminal A — default rate (1 Hz):**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run ros2_basics param_talker
+```
+
+**Terminal A — custom rate and message:**
+```bash
+ros2 run ros2_basics param_talker --ros-args -p rate:=3.0 -p message:=Sanny
+```
+
+**Terminal B — inspect parameters while running:**
+```bash
+ros2 param list /param_talker
+ros2 param get /param_talker rate
+ros2 param set /param_talker message "ROS2 is cool"
+```
+
+> `ros2 param set` updates the value in memory but the node reads it only at startup — the message won't change while running. Lifecycle nodes solve this.
+
+---
+
+## Step 5 — Lifecycle Node
+
+A lifecycle node has managed states. You control when it configures, activates, and shuts down. The node does nothing until you tell it to.
+
+```
+Unconfigured → configure → Inactive → activate → Active → deactivate → Inactive
+```
+
+**Terminal A — start the node (does nothing yet):**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run ros2_basics lifecycle_talker
+```
+
+**Terminal B — drive it through states:**
+```bash
+ros2 lifecycle set /lifecycle_talker configure   # creates publisher
+ros2 lifecycle set /lifecycle_talker activate    # starts publishing
+ros2 lifecycle set /lifecycle_talker deactivate  # stops publishing
+ros2 lifecycle set /lifecycle_talker activate    # resumes publishing
+ros2 lifecycle get /lifecycle_talker             # check current state
+```
+
+---
+
+## Step 6 — Diff Drive Robot in Gazebo
 
 A two-wheeled robot loaded from URDF, spawned in Gazebo, driven by keyboard.
 
@@ -206,7 +259,9 @@ src/
 │       ├── server.py             # AddTwoInts service server
 │       ├── client.py             # AddTwoInts service client
 │       ├── action_server.py      # Countdown action server
-│       └── action_client.py      # Countdown action client
+│       ├── action_client.py      # Countdown action client
+│       ├── param_talker.py       # Talker with configurable rate and message
+│       └── lifecycle_talker.py   # Talker with managed lifecycle states
 │
 └── diff_drive_robot/
     ├── package.xml
