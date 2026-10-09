@@ -28,5 +28,23 @@ install(PROGRAMS
     RENAME client
 )
 
+find_package(rosidl_default_generators REQUIRED)
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "action/Countdown.action"
+)
+
+install(PROGRAMS
+    scripts/action_server.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME action_server
+)
+
+install(PROGRAMS
+    scripts/action_client.py
+    DESTINATION lib/${PROJECT_NAME}
+    RENAME action_client
+)
+
 
 ament_package()
