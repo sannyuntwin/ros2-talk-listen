@@ -20,7 +20,7 @@ def generate_launch_description():
         # Gazebo
         Node(
             package="ros_gz_sim",
-            executable="gzserver",
+            executable="gz_sim",
             arguments=["-r", "empty.sdf"],
             output="screen",
         ),
