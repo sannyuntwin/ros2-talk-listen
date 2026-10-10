@@ -4,6 +4,10 @@ from launch.substitutions import Command, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
+import os
+from ament_index_python.packages import get_package_share_directory
+
+
 
 def generate_launch_description():
     pkg = FindPackageShare("diff_drive_robot")
@@ -51,4 +55,15 @@ def generate_launch_description():
             ],
             output="screen",
         ),
+        
+        # 5 — RViz2
+        Node(
+            package="rviz2",
+            executable="rviz2",
+            arguments=["-d", os.path.join(
+                get_package_share_directory("diff_drive_robot"), "rviz", "robot.rviz"
+            )],
+            output="screen",
+        ),
+
     ])

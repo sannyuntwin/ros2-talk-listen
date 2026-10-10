@@ -3,12 +3,6 @@ project(diff_drive_robot)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY
-  urdf
-  launch
-  DESTINATION share/${PROJECT_NAME}
-)
-
 install(PROGRAMS
   scripts/drive.py
   DESTINATION lib/${PROJECT_NAME}
@@ -38,5 +32,13 @@ install(PROGRAMS
   DESTINATION lib/${PROJECT_NAME}
   RENAME odom_tf_pub
 )
+
+install(DIRECTORY
+  urdf
+  launch
+  rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+
 
 ament_package()
