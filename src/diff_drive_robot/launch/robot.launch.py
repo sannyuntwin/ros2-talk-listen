@@ -71,7 +71,7 @@ def generate_launch_description():
             output="screen",
         ),
 
-        # 6 — RViz2
+        # 7 — RViz2
         Node(
             package="rviz2",
             executable="rviz2",

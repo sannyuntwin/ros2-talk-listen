@@ -22,6 +22,7 @@ A beginner ROS 2 project for learning core concepts step by step: topics, servic
 | 4 | **Parameters** | Node reads config values at startup or runtime |
 | 5 | **Lifecycle Node** | Managed states — configure, activate, deactivate |
 | 6 | **Diff Drive Robot** | URDF robot in Gazebo, driven by `/cmd_vel` Twist messages |
+| 7 | **TF2 + RViz2** | Transform tree, odometry TF publisher, robot visualized in RViz2 |
 
 ---
 
@@ -33,7 +34,9 @@ A beginner ROS 2 project for learning core concepts step by step: topics, servic
 # After installing ROS 2
 sudo apt install python3-colcon-common-extensions \
   ros-jazzy-ros-gz-sim ros-jazzy-ros-gz-bridge \
-  ros-jazzy-robot-state-publisher ros-jazzy-xacro
+  ros-jazzy-robot-state-publisher ros-jazzy-xacro \
+  ros-jazzy-joint-state-publisher ros-jazzy-rviz2 \
+  ros-jazzy-tf2-tools ros-jazzy-tf2-ros
 ```
 
 Source ROS 2 in every new terminal (or add to `~/.bashrc`):
@@ -212,21 +215,18 @@ teleop  →  /cmd_vel (Twist)  →  ros_gz_bridge  →  Gazebo diff drive plugin
 
 | Component | Role |
 |---|---|
-| `robot_state_publisher` | Reads URDF, broadcasts TF frames |
+| `robot_state_publisher` | Reads URDF, broadcasts TF frames for all links |
 | `gz sim` | Opens Gazebo with an empty world |
 | `ros_gz_sim create` | Spawns the robot from `/robot_description` topic |
-| `ros_gz_bridge` | Bridges `/cmd_vel` and `/odom` between ROS 2 and Gazebo |
+| `ros_gz_bridge` | Bridges `/cmd_vel`, `/odom`, `/tf` between ROS 2 and Gazebo |
+| `joint_state_publisher` | Publishes zero joint positions so wheel TF frames exist |
+| `odom_tf_pub` | Subscribes `/odom`, publishes `odom → base_link` TF |
 
-**Terminal A — launch everything:**
+**Terminal A — launch everything (Gazebo + RViz2 open automatically):**
 ```bash
-source ~/ros2/ros2-talk-listen/install/setup.bash
+cd ~/ros2/ros2-talk-listen
+source install/setup.bash
 ros2 launch diff_drive_robot robot.launch.py
-```
-
-**Terminal B — autonomous square drive:**
-```bash
-source ~/ros2/ros2-talk-listen/install/setup.bash
-ros2 run diff_drive_robot drive
 ```
 
 **Terminal B — keyboard control (click this terminal before pressing keys):**
@@ -240,6 +240,43 @@ Keyboard controls:
 w = forward      s = backward
 a = turn left    d = turn right
 space = stop     q = quit
+```
+
+**Terminal B — autonomous square drive:**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run diff_drive_robot drive
+```
+
+---
+
+## Step 7 — TF2 + RViz2 Visualization
+
+RViz2 shows the robot model, the TF frame tree, and the odometry path as the robot drives.
+
+```
+Gazebo /odom  →  odom_tf_pub  →  odom → base_link  (TF)
+URDF joints   →  robot_state_publisher + joint_state_publisher  →  base_link → wheels  (TF)
+All TF frames  →  RViz2  →  robot rendered in 3D
+```
+
+**TF frame tree:**
+```
+odom
+  └── base_link
+        ├── left_wheel
+        ├── right_wheel
+        └── caster_wheel
+```
+
+**Why `odom_tf_pub` is needed:**
+Gazebo publishes odometry on `/odom` (position/orientation). RViz2 needs a TF transform `odom → base_link` to know where the robot is in the world. `odom_tf_pub` reads `/odom` and re-publishes it as a TF transform using the node's wall clock — this is important because Gazebo uses simulation time while `joint_state_publisher` uses wall clock, and TF requires consistent timestamps to chain frames.
+
+**Inspect the TF tree:**
+```bash
+source ~/ros2/ros2-talk-listen/install/setup.bash
+ros2 run tf2_tools view_frames        # writes frames.pdf
+ros2 run tf2_ros tf2_echo odom base_link   # live transform values
 ```
 
 ---
@@ -269,10 +306,15 @@ src/
     ├── urdf/
     │   └── robot.urdf.xacro   # Box body, 2 wheels, caster + diff drive plugin
     ├── launch/
-    │   └── robot.launch.py    # Launches RSP, Gazebo, spawn, bridge
+    │   └── robot.launch.py    # Launches RSP, Gazebo, spawn, bridge, RViz2
+    ├── rviz/
+    │   └── robot.rviz         # Pre-configured RViz2 layout (Grid, RobotModel, TF, Odometry)
     └── scripts/
         ├── drive.py           # Drives a square autonomously
-        └── teleop.py          # Keyboard control via w/a/s/d
+        ├── teleop.py          # Keyboard control via w/a/s/d
+        ├── odom_tf_pub.py     # Publishes odom→base_link TF from /odom (wall clock)
+        ├── tf_listener.py     # Prints live TF transforms to terminal
+        └── static_tf.py       # Broadcasts a static TF transform
 ```
 
 ---
