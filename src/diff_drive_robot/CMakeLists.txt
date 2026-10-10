@@ -21,5 +21,18 @@ install(PROGRAMS
   RENAME teleop
 )
 
+install(PROGRAMS
+  scripts/tf_listener.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME tf_listener
+)
+
+install(PROGRAMS
+  scripts/static_tf.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME static_tf
+)
+
+
 
 ament_package()
