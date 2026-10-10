@@ -91,6 +91,7 @@
       <wheel_radius>0.05</wheel_radius>
       <topic>/cmd_vel</topic>
       <odom_topic>/odom</odom_topic>
+      <joint_states_topic>/joint_states</joint_states_topic>
       <frame_id>odom</frame_id>
       <child_frame_id>base_link</child_frame_id>
     </plugin>
