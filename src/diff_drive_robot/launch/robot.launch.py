@@ -41,10 +41,8 @@ def generate_launch_description():
             output="screen",
         ),
         
-        # 4 — Bridge 
-        # Takes robot_description topic (the URDF) and puts the robot into Gazebo
-        # This bridge connects /cmd_vel and /odom between them
-
+        # 4 — Bridge
+        # Connects /cmd_vel, /odom, and /joint_states between ROS 2 and Gazebo
         Node(
             package="ros_gz_bridge",
             executable="parameter_bridge",
@@ -52,11 +50,20 @@ def generate_launch_description():
                 "/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist",
                 "/odom@nav_msgs/msg/Odometry@gz.msgs.Odometry",
                 "/tf@tf2_msgs/msg/TFMessage[gz.msgs.Pose_V",
+                "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
             ],
             output="screen",
         ),
         
-        # 5 — RViz2
+        # 5 — Odom TF Publisher
+        # Subscribes to /odom and publishes odom→base_link TF (required for RViz2 fixed frame)
+        Node(
+            package="diff_drive_robot",
+            executable="odom_tf_pub",
+            output="screen",
+        ),
+
+        # 6 — RViz2
         Node(
             package="rviz2",
             executable="rviz2",
