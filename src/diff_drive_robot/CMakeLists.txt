@@ -33,6 +33,10 @@ install(PROGRAMS
   RENAME static_tf
 )
 
-
+install(PROGRAMS
+  scripts/odom_tf_pub.py
+  DESTINATION lib/${PROJECT_NAME}
+  RENAME odom_tf_pub
+)
 
 ament_package()
